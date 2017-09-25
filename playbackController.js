@@ -23,22 +23,31 @@ class PlaybackController {
             console.log('pause')
             this.pause()
         })
+
+        this.playerView.on('player:step', ()=>{
+            console.log('step')
+            this.step()
+        })
     }
 
     play(){
         this.playerView.setStatePlaying()
         this.timer = d3.interval(() => {
-            this.playerView.setTicks(this.nTick)
-            if (this.nTick >= this.maxTicks) {
-                this.pause()
-                return
-            }
-
-            this.views.forEach(view => {
-                view.tick(this.nTick)
-            })
-            this.nTick++
+            this.step()
         }, this.interval)
+    }
+
+    step(){
+        this.playerView.setTicks(this.nTick)
+        if (this.nTick >= this.maxTicks) {
+            this.pause()
+            return
+        }
+
+        this.views.forEach(view => {
+            view.tick(this.nTick)
+        })
+        this.nTick++
     }
 
     pause(){
@@ -46,6 +55,7 @@ class PlaybackController {
         if(this.timer){
             this.timer.stop()    
         }
+        this.timer = null
     }
 
     reset(){

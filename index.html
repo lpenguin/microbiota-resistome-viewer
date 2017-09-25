@@ -7,7 +7,6 @@
     <title>VERA viewer</title>
 </head>
 <body>
-    
     <div class="box">
         <div class="split-horizontal">
             <div class="split-vertical">
@@ -15,7 +14,10 @@
                     <div class="title">Agents transitions</div>
                     <svg id="svg"></svg>
                 </div>
-                <div class="fill">Blank</div>
+                <div class="agents-view fill">
+                        <div class="title">Agents edges</div>
+                        <svg id="svg-edges"></svg>
+                    </div>
             </div>
             <div class="split-vertical">
                 <div id="resistance" class="fill"></div>
@@ -25,6 +27,7 @@
         <div class="row footer yellow">
             <button id="btn-play">Play</button>
             <button id="btn-pause">Pause</button>
+            <button id="btn-step">Step</button>
             <button id="btn-reset">Reset</button>
             Ticks: <span id="text-ticks"></span>
         </div>

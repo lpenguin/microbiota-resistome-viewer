@@ -4,7 +4,17 @@ circle.state {
     stroke-width: 1;
 }
 
+line.transition {
+    stroke: black;
+    stroke-width: 0;
+}
+
 #svg {
+    width: 100%;
+    height: 100%;
+}
+
+#svg-edges {
     width: 100%;
     height: 100%;
 }

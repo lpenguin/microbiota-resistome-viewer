@@ -9,6 +9,7 @@ class PlayerView extends EventEmitter {
         this.playButton = document.getElementById('btn-play')
         this.pauseButton = document.getElementById('btn-pause')
         this.resetButton = document.getElementById('btn-reset')
+        this.stepButton = document.getElementById('btn-step')
 
         this.playButton.addEventListener('click', ()=>{
             this.emit('player:play')
@@ -20,6 +21,10 @@ class PlayerView extends EventEmitter {
         
         this.pauseButton.addEventListener('click', ()=>{
             this.emit('player:pause')
+        })
+
+        this.stepButton.addEventListener('click', ()=>{
+            this.emit('player:step')
         })
 
         this.setTicks(0)
