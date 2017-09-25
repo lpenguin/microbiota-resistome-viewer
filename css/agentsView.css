@@ -1,0 +1,22 @@
+circle.state {
+    fill: #1da5bd;
+    stroke: black;
+    stroke-width: 1;
+}
+
+#svg {
+    width: 100%;
+    height: 100%;
+}
+
+.agents-view.title {
+    color: rgb(51, 51, 51);
+    display: block;
+    fill:  rgb(51, 51, 51);
+    font-family: "Lucida Grande", "Lucida Sans Unicode", Arial, Helvetica, sans-serif;
+    font-size: 18px;
+    text-align: center;
+    margin-top: 5px;
+    text-anchor: middle;
+    white-space: 0px;
+}

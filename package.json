@@ -1,0 +1,16 @@
+{
+  "name": "your-app",
+  "version": "0.1.0",
+  "main": "main.js",
+  "devDependencies": {
+    "electron": "^1.6.11"
+  },
+  "dependencies": {
+    "async": "^2.5.0",
+    "d3": "^4.10.0",
+    "highcharts": "^5.0.14",
+    "phosphor": "^0.7.1",
+    "phosphor-dockpanel": "^0.9.7",
+    "underscore": "^1.8.3"
+  }
+}
