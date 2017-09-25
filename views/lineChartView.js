@@ -1,9 +1,11 @@
 const Highcharts = require('highcharts');
 const Data = require('./data');
 const _ = require('underscore');
+const {BaseView} = require('./baseView')
 
-class LineChartView {
+class LineChartView extends BaseView {
     constructor({target, abundance, title, ylabel='', type='line'}){
+        super();
         this._target = target;
         this._title = title;
         this._ylabel = ylabel;
@@ -93,7 +95,8 @@ class LineChartView {
     }
 
     reset(){
-
+        this._chart.destroy()
+        this._render()
     }
 }
 

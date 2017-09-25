@@ -9,7 +9,7 @@ circle.state {
     height: 100%;
 }
 
-.agents-view.title {
+.agents-view > .title {
     color: rgb(51, 51, 51);
     display: block;
     fill:  rgb(51, 51, 51);

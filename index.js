@@ -5,14 +5,14 @@ const d3 = require('d3');
 const async = require('async');
 const {ipcRenderer} = require('electron');
 
-const {Player} = require('./player');
+const {PlaybackController} = require('./playbackController');
+const {PlayerView} = require('./views/playerView')
+
 
 ipcRenderer.on('loadDataAndRun', (event, data)=>{
     const {abundanceFile, transLogFile} = data;
     loadDataAndRun(abundanceFile, transLogFile);
 });
-
-let player = null;
 
 function loadDataAndRun(abundanceFile, transLogFile) {
     async.parallel([
@@ -56,7 +56,11 @@ function loadDataAndRun(abundanceFile, transLogFile) {
             title: 'Resitance related',
         });
 
-        player = new Player({
+        const playerView = new PlayerView({
+            maxTicks: transitions.length,
+        })
+
+        const player = new PlaybackController({
             views: [
                 agentsView,
                 abundanceView,
@@ -64,25 +68,10 @@ function loadDataAndRun(abundanceFile, transLogFile) {
             ],
             interval: transitionDuration + 50,
             maxTicks: transitions.length,
+            playerView: playerView,
         })
-    });
+    })
 }
-
-document.getElementById('btn-play').onclick = ()=>{
-    console.log('play');
-    player.play();
-};
-
-document.getElementById('btn-reset').onclick = ()=>{
-    console.log('reset');
-    player.reset();
-};
-
-document.getElementById('btn-pause').onclick = ()=>{
-    console.log('pause');
-    player.pause();
-};
-
 
 // document.getElementById('btn-reset', ()=>{
 //     console.log('reset');

@@ -3,8 +3,9 @@ const _ = require('underscore');
 const {BaseView} = require('./baseView');
 const {Data} = require('./data')
 
-class AgentsView {
+class AgentsView extends BaseView {
     constructor({abundance, ticks, targetId, transitionDuration=500}){
+        super();
         this._states = this._convertAbundance(abundance);
         this._ticks = ticks;
 
