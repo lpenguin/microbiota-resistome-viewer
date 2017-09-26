@@ -164,8 +164,9 @@ class AgentsView extends BaseView {
             .classed('state', true)
             .merge(stateText)
             .text(d => d.name + " " + d.count)
+            .attr('text-anchor', 'middle')
             .attr('x', d => this._xScale(d.x))
-            .attr('y', d => this._yScale(d.y))
+            .attr('y', d => this._yScale(d.y) - 5)
             .attr('dx', 10)
         ;
 

@@ -18,16 +18,34 @@ class EdgesView extends BaseView {
         this._transitionDuration = transitionDuration;
 
         this._statesMap = _.object(this._states.map(s => s.name), this._states);
-        console.log(this._statesMap)
+
         this._createTransitionsMap()
         this._recalcScales()
-        
+
         this._createStates();
         window.addEventListener('resize', () => {
             console.log('resize');
             this._recalcScales();
             this._createStates();
         });
+
+        this._svg.append("svg:defs")
+        // .selectAll("marker")
+        // .data(["suit", "licensing", "resolved"])
+        .append("svg:marker")
+        .attr("id", "marker-end")
+        // .attr("viewBox", "0 -5 10 10")
+        .attr("refX", 0)
+        .attr("refY", 1)
+        .attr("markerWidth", 2)
+        .attr("markerHeight", 2)
+        .attr("orient", "auto")
+        // .attr('markerUnits', 'userSpaceOnUse')
+        .append("svg:path")
+        .attr("d", "M0,1 L0,2 L2,1 L0,0 L0,1");
+
+        this._linksPath = this._svg.append("svg:g")
+       
     }
 
     reset(){
@@ -42,12 +60,16 @@ class EdgesView extends BaseView {
         this._transitionsMap = {};
         for(let stateFromName in this._statesMap){
             for(let stateToName in this._statesMap){
+                if(stateFromName == stateToName){
+                    continue
+                }
+
                 const transitionName = this._transtitionName(stateFromName, stateToName);
                 this._transitionsMap[transitionName] = {
                     name: transitionName,
                     transitions: [],  // number of transitions per tick
-                    stateFrom: this._statesMap[stateFromName],
-                    stateTo: this._statesMap[stateToName],
+                    source: this._statesMap[stateFromName],
+                    target: this._statesMap[stateToName],
                 }
             }                
         }
@@ -111,7 +133,7 @@ class EdgesView extends BaseView {
 
         this._widthScale = d3.scaleLinear()
             .domain([0, 200])
-            .range([0, 10])
+            .range([0, 7])
             .clamp(true);
 
         this._transitionColorScale = d3.scaleLinear()
@@ -143,8 +165,6 @@ class EdgesView extends BaseView {
 
         events.forEach((event) => {
             const transitionName = this._transtitionName(event.oldState, event.newState)
-
-            // const transition = this._transitionsMap[this._transtitionName(event.oldState, event.newState)];
             transitionsInTick[transitionName] = (transitionsInTick[transitionName] || 0) + 1
         });
 
@@ -154,49 +174,80 @@ class EdgesView extends BaseView {
         }
     }
 
-    // _animateEvents(events) {
-    //     let circleAgent = this._svg.selectAll("circle.agent").data(events);
-
-    //     circleAgent
-    //         .enter()
-    //         .append('circle')
-    //         .classed('agent', true)
-    //         .attr('cx', d => this._stateX(d.oldState))
-    //         .attr('cy', d => this._stateY(d.oldState))
-    //         .attr("r", 2.5)
-    //         .transition()
-    //         .duration(this._transitionDuration)
-    //         .delay((d, i) => {
-    //             return Math.random() * this._transitionDuration / 10
-    //         })
-    //         .attr('cx', d => this._stateX(d.newState))
-    //         .attr('cy', d => this._stateY(d.newState))
-    //         .remove();
-    //     // .call(d3_transition_endall, callback);
-    //     // .on('end', function(){callback();});
-    // }
-
     _animateTransitions(){
         const transtitions = _.values(this._transitionsMap);
-        console.log(transtitions.filter(t => t.transitions.length > 0).map(d => sum(d.transitions.slice(-10))))
 
-        let transitionLines = this._svg.selectAll('line.transition').data(transtitions);
-        transitionLines
-            .enter()
-            .append('line')
-            .classed('transition', true)
-            .merge(transitionLines)
-            .attr('x1', d => this._xScale(d.stateFrom.x))
-            .attr('y1', d => this._yScale(d.stateFrom.y))
-            .attr('x2', d => this._xScale(d.stateTo.x))
-            .attr('y2', d => this._yScale(d.stateTo.y))
-            // .transition()
-            // .duration(this._transitionDuration)
-            .style('stroke-width', d => {
-                return this._widthScale(sum(d.transitions.slice(-10)))
-            })
-            .style('stroke', d => this._transitionColorScale(sum(d.transitions.slice(-10))))
+        const transitionElems = (
+            this._linksPath
+            .selectAll("path")
+            .data(transtitions)
+        )
+
+        
+        transitionElems
+        .enter()
+        .append("svg:path")
+        .style('stroke-width', 0)
+        .merge(transitionElems)
+        .classed('link', true)
+        .attr("d", d => {
+            const [sx, tx] = [d.source.x, d.target.x].map(this._xScale);
+            const [sy, ty] = [d.source.y, d.target.y].map(this._yScale);
+            const [dx, dy] = [(tx - sx)/2, (ty - sy)/2];
+            
+            const r = Math.sqrt(dx * dx + dy * dy) 
+            const c = r * Math.tan(Math.PI/6)
+
+            const dx1 = c * dy / r
+            const dy1 = c * dx / r
+            
+            const controlx = sx + dx - dx1
+            const controly = sy + dy + dy1
+
+            const res =  `M${sx},${sy} Q${controlx},${controly} ${tx},${ty}`;
+            return res;
+        })
+        .transition()
+        .duration(this._transitionDuration)
+        .style('stroke-width', d => this._widthScale(sum(d.transitions.slice(-10))))
+        .style('stroke', d => this._transitionColorScale(sum(d.transitions.slice(-10))))
+        // .attr("marker-end", d => "url(#marker-end)")
         ;
+        
+
+        // const transtitions = _.values(this._transitionsMap);
+        // console.log(transtitions.filter(t => t.transitions.length > 0).map(d => sum(d.transitions.slice(-10))))
+
+        // const path = this._svg.append("svg:g")
+        //         .selectAll("path")
+        //         .data(transtitions)
+        //         .enter()
+        //         .append("svg:path");
+
+        // path.attr("d", function(d) {
+        //   var dx = d.target.x - d.source.x,
+        //       dy = d.target.y - d.source.y,
+        //       dr = 75;  //linknum is defined above
+        //   return "M" + d.source.x + "," + d.source.y + "A" + dr + "," + dr + " 0 0,1 " + d.target.x + "," + d.target.y;
+        // });
+
+        // let transitionLines = this._svg.selectAll('line.transition').data(transtitions);
+        // transitionLines
+        //     .enter()
+        //     .append('line')
+        //     .classed('transition', true)
+        //     .merge(transitionLines)
+        //     .attr('x1', d => this._xScale(d.stateFrom.x))
+        //     .attr('y1', d => this._yScale(d.stateFrom.y))
+        //     .attr('x2', d => this._xScale(d.stateTo.x))
+        //     .attr('y2', d => this._yScale(d.stateTo.y))
+        //     // .transition()
+        //     // .duration(this._transitionDuration)
+        //     .style('stroke-width', d => {
+        //         return this._widthScale(sum(d.transitions.slice(-10)))
+        //     })
+        //     .style('stroke', d => this._transitionColorScale(sum(d.transitions.slice(-10))))
+        // ;
     }
 
     _animateStates(events) {
@@ -243,8 +294,9 @@ class EdgesView extends BaseView {
             .classed('state', true)
             .merge(stateText)
             .text(d => d.name + " " + d.count)
+            .attr('text-anchor', 'middle')
             .attr('x', d => this._xScale(d.x))
-            .attr('y', d => this._yScale(d.y))
+            .attr('y', d => this._yScale(d.y) - 5)
             .attr('dx', 10)
         ;
 
