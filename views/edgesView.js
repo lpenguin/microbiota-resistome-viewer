@@ -35,14 +35,14 @@ class EdgesView extends BaseView {
         .append("svg:marker")
         .attr("id", "marker-end")
         // .attr("viewBox", "0 -5 10 10")
-        .attr("refX", 0)
-        .attr("refY", 1)
-        .attr("markerWidth", 2)
-        .attr("markerHeight", 2)
+        .attr("refX", 3.5)
+        .attr("refY", 2)
+        .attr("markerWidth", 4)
+        .attr("markerHeight", 4)
         .attr("orient", "auto")
         // .attr('markerUnits', 'userSpaceOnUse')
         .append("svg:path")
-        .attr("d", "M0,1 L0,2 L2,1 L0,0 L0,1");
+        .attr("d", "M2,2 L0,4 L4,2 L0,0 L2,2");
 
         this._linksPath = this._svg.append("svg:g")
        
@@ -174,6 +174,25 @@ class EdgesView extends BaseView {
         }
     }
 
+
+    _distance(sx, sy, tx, ty){
+        let [dx, dy] = [tx - sx, ty - sy]
+        return Math.sqrt(dx * dx + dy * dy)
+    }
+
+    _calcControlPoint(sx, sy, tx, ty){
+        const [dx, dy] = [(tx - sx)/2, (ty - sy)/2];
+        const r =  this._distance(sx, sy, tx, ty) / 2
+        const c = r * Math.tan(Math.PI/6)
+        const dx1 = c * dy / r
+        const dy1 = c * dx / r
+
+        const controlx = sx + dx - dx1
+        const controly = sy + dy + dy1
+
+        return [controlx, controly]
+    }
+
     _animateTransitions(){
         const transtitions = _.values(this._transitionsMap);
 
@@ -190,64 +209,35 @@ class EdgesView extends BaseView {
         .style('stroke-width', 0)
         .merge(transitionElems)
         .classed('link', true)
+        .attr("marker-end", d => "url(#marker-end)")
+        .transition()
+        .duration(this._transitionDuration)
         .attr("d", d => {
             const [sx, tx] = [d.source.x, d.target.x].map(this._xScale);
             const [sy, ty] = [d.source.y, d.target.y].map(this._yScale);
-            const [dx, dy] = [(tx - sx)/2, (ty - sy)/2];
-            
-            const r = Math.sqrt(dx * dx + dy * dy) 
-            const c = r * Math.tan(Math.PI/6)
 
-            const dx1 = c * dy / r
-            const dy1 = c * dx / r
-            
-            const controlx = sx + dx - dx1
-            const controly = sy + dy + dy1
+            const sr = this._countsScale(d.source.count)
+            const tr = this._countsScale(d.target.count)
+            const r = this._distance(sx, sy, tx, ty)
 
+            const [dx, dy] = [tx - sx, ty - sy]
+            const [sdx, sdy] = [sr/r * dx, sr/r * dy]
+            const [tdx, tdy] = [tr/r * dx, tr/r * dy]
+
+            const [sx1, sy1] = [sx + sdx, sy + sdy]
+            const [tx1, ty1] = [tx - tdx, ty - tdy]
+            
+            const [controlx, controly] = this._calcControlPoint(sx, sy, tx, ty)
+            // const [controlx, controly] = this._calcControlPoint(sx1, sy1, tx1, ty1)
+            
             const res =  `M${sx},${sy} Q${controlx},${controly} ${tx},${ty}`;
+            // const res =  `M${sx1},${sy1} Q${controlx},${controly} ${tx1},${ty1}`;
             return res;
         })
-        .transition()
-        .duration(this._transitionDuration)
         .style('stroke-width', d => this._widthScale(sum(d.transitions.slice(-10))))
         .style('stroke', d => this._transitionColorScale(sum(d.transitions.slice(-10))))
-        // .attr("marker-end", d => "url(#marker-end)")
-        ;
         
-
-        // const transtitions = _.values(this._transitionsMap);
-        // console.log(transtitions.filter(t => t.transitions.length > 0).map(d => sum(d.transitions.slice(-10))))
-
-        // const path = this._svg.append("svg:g")
-        //         .selectAll("path")
-        //         .data(transtitions)
-        //         .enter()
-        //         .append("svg:path");
-
-        // path.attr("d", function(d) {
-        //   var dx = d.target.x - d.source.x,
-        //       dy = d.target.y - d.source.y,
-        //       dr = 75;  //linknum is defined above
-        //   return "M" + d.source.x + "," + d.source.y + "A" + dr + "," + dr + " 0 0,1 " + d.target.x + "," + d.target.y;
-        // });
-
-        // let transitionLines = this._svg.selectAll('line.transition').data(transtitions);
-        // transitionLines
-        //     .enter()
-        //     .append('line')
-        //     .classed('transition', true)
-        //     .merge(transitionLines)
-        //     .attr('x1', d => this._xScale(d.stateFrom.x))
-        //     .attr('y1', d => this._yScale(d.stateFrom.y))
-        //     .attr('x2', d => this._xScale(d.stateTo.x))
-        //     .attr('y2', d => this._yScale(d.stateTo.y))
-        //     // .transition()
-        //     // .duration(this._transitionDuration)
-        //     .style('stroke-width', d => {
-        //         return this._widthScale(sum(d.transitions.slice(-10)))
-        //     })
-        //     .style('stroke', d => this._transitionColorScale(sum(d.transitions.slice(-10))))
-        // ;
+        ;
     }
 
     _animateStates(events) {
