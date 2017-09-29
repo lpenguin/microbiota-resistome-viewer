@@ -13,7 +13,7 @@ class EdgesView extends BaseView {
         super();
         this._states = this._convertAbundance(abundance);
         this._ticks = ticks;
-
+        this._constStatesCount = 200
         this._svg = d3.select(targetId);
         this._transitionDuration = transitionDuration;
 
@@ -30,21 +30,19 @@ class EdgesView extends BaseView {
         });
 
         this._svg.append("svg:defs")
-        // .selectAll("marker")
-        // .data(["suit", "licensing", "resolved"])
         .append("svg:marker")
         .attr("id", "marker-end")
-        // .attr("viewBox", "0 -5 10 10")
+        .classed('marker', true)
         .attr("refX", 3.5)
         .attr("refY", 2)
         .attr("markerWidth", 4)
         .attr("markerHeight", 4)
         .attr("orient", "auto")
-        // .attr('markerUnits', 'userSpaceOnUse')
         .append("svg:path")
-        .attr("d", "M2,2 L0,4 L4,2 L0,0 L2,2");
+        .attr("d", "M1,2 L0,4 L4,2 L0,0 L1,2");
 
         this._linksPath = this._svg.append("svg:g")
+        
        
     }
 
@@ -132,8 +130,13 @@ class EdgesView extends BaseView {
             .clamp(true);
 
         this._widthScale = d3.scaleLinear()
+            .domain([0, 1.9, 2, 200])
+            .range([0, 0, 1.5, 6])
+            .clamp(true);
+
+        this._opacityScale = d3.scaleLinear()
             .domain([0, 200])
-            .range([0, 7])
+            .range([0, 1])
             .clamp(true);
 
         this._transitionColorScale = d3.scaleLinear()
@@ -193,6 +196,17 @@ class EdgesView extends BaseView {
         return [controlx, controly]
     }
 
+    _calcEdgePoints(x1, y1, x2, y2, offset){
+        const r = this._distance(x1, y1, x2, y2)
+        const [dx, dy] = [x2 - x1, y2 - y1]
+        
+        const [dx1, dy1] = [offset/r * dx, offset/r * dy]
+
+        const [edgeX1, edgeY1] = [x1 + dx1, y1 + dy1]
+
+        return [edgeX1, edgeY1]
+    }
+
     _animateTransitions(){
         const transtitions = _.values(this._transitionsMap);
 
@@ -207,6 +221,7 @@ class EdgesView extends BaseView {
         .enter()
         .append("svg:path")
         .style('stroke-width', 0)
+        // .style('stroke-opacity', 0)
         .merge(transitionElems)
         .classed('link', true)
         .attr("marker-end", d => "url(#marker-end)")
@@ -216,51 +231,56 @@ class EdgesView extends BaseView {
             const [sx, tx] = [d.source.x, d.target.x].map(this._xScale);
             const [sy, ty] = [d.source.y, d.target.y].map(this._yScale);
 
-            const sr = this._countsScale(d.source.count)
-            const tr = this._countsScale(d.target.count)
-            const r = this._distance(sx, sy, tx, ty)
+            const sr = this._countsScale(this._constStatesCount)
+            const tr = this._countsScale(this._constStatesCount)
 
-            const [dx, dy] = [tx - sx, ty - sy]
-            const [sdx, sdy] = [sr/r * dx, sr/r * dy]
-            const [tdx, tdy] = [tr/r * dx, tr/r * dy]
-
-            const [sx1, sy1] = [sx + sdx, sy + sdy]
-            const [tx1, ty1] = [tx - tdx, ty - tdy]
-            
             const [controlx, controly] = this._calcControlPoint(sx, sy, tx, ty)
-            // const [controlx, controly] = this._calcControlPoint(sx1, sy1, tx1, ty1)
+            const [sEdgeX, sEdgeY] = this._calcEdgePoints(sx, sy, controlx, controly, sr)
+            const [tEdgeX, tEdgeY] = this._calcEdgePoints(tx, ty, controlx, controly, tr)
+
+            // const r = this._distance(sx, sy, tx, ty)
+
+            // const [dx, dy] = [tx - sx, ty - sy]
+            // const [sdx, sdy] = [sr/r * dx, sr/r * dy]
+            // const [tdx, tdy] = [tr/r * dx, tr/r * dy]
+
+            // const [sx1, sy1] = [sx + sdx, sy + sdy]
+            // const [tx1, ty1] = [tx - tdx, ty - tdy]
             
-            const res =  `M${sx},${sy} Q${controlx},${controly} ${tx},${ty}`;
-            // const res =  `M${sx1},${sy1} Q${controlx},${controly} ${tx1},${ty1}`;
+            // const [controlx, controly] = this._calcControlPoint(sx, sy, tx, ty)
+            // const [controlx, controly] = this._calcControlPoint(sEdgeX, sEdgeY, tEdgeX, tEdgeY)
+            
+            // const res =  `M${sx},${sy} Q${controlx},${controly} ${tx},${ty}`;
+            const res =  `M${sEdgeX},${sEdgeY} Q${controlx},${controly} ${tEdgeX},${tEdgeY}`;
             return res;
         })
+        // .style('stroke-opacity', d => this._opacityScale(sum(d.transitions.slice(-10))))
         .style('stroke-width', d => this._widthScale(sum(d.transitions.slice(-10))))
         .style('stroke', d => this._transitionColorScale(sum(d.transitions.slice(-10))))
-        
         ;
     }
 
     _animateStates(events) {
-        events.forEach((e) => {
-            this._statesMap[e.oldState].count = Math.max(0, this._statesMap[e.oldState].count - 1);
-            this._statesMap[e.newState].count = Math.max(0, this._statesMap[e.newState].count + 1);
-        });
+        // events.forEach((e) => {
+        //     this._statesMap[e.oldState].count = Math.max(0, this._statesMap[e.oldState].count - 1);
+        //     this._statesMap[e.newState].count = Math.max(0, this._statesMap[e.newState].count + 1);
+        // });
 
-        let stateCircle = this._svg.selectAll("circle.state").data(this._states);
+        // let stateCircle = this._svg.selectAll("circle.state").data(this._states);
 
-        stateCircle
-            .transition()
-            .duration(this._transitionDuration * 0.4)
-            .delay(this._transitionDuration * 0.6)
-            .attr('cx', d => this._xScale(d.x))
-            .attr('cy', d => this._yScale(d.y))
-            .attr('r', d =>  this._countsScale(d.count))
-        ;
+        // stateCircle
+        //     .transition()
+        //     .duration(this._transitionDuration * 0.4)
+        //     .delay(this._transitionDuration * 0.6)
+        //     .attr('cx', d => this._xScale(d.x))
+        //     .attr('cy', d => this._yScale(d.y))
+        //     .attr('r', d =>  this._countsScale(d.count))
+        // ;
 
-        this._svg
-            .selectAll("text.state")
-            .data(this._states)
-            .text(d => d.name + " " + d.count);
+        // this._svg
+        //     .selectAll("text.state")
+        //     .data(this._states)
+        //     .text(d => d.name + " " + d.count);
     }
 
     _createStates() {
@@ -273,7 +293,7 @@ class EdgesView extends BaseView {
             .merge(stateCircle)
             .attr('cx', d => this._xScale(d.x))
             .attr('cy', d => this._yScale(d.y))
-            .attr('r', d =>  this._countsScale(d.count))
+            .attr('r', d =>  this._countsScale(200))
         ;
 
         let stateText = this._svg.selectAll("text.state").data(this._states);
