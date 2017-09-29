@@ -48,6 +48,7 @@ class EdgesView extends BaseView {
 
     reset(){
         this._createTransitionsMap()
+        this._animateTransitions()
     }
 
     _transtitionName(fromName, toName){
