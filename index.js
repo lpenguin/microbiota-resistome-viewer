@@ -23,71 +23,61 @@ function loadDataAndRun(abundanceFile, transLogFile) {
         let [transitions, abundance] = result;
 
         const transitionDuration = 500;
-        const agentsView = new AgentsView({
-            abundance: abundance,
-            ticks: transitions,
-            targetId: "#svg",
-            transitionDuration: transitionDuration,
-        });
-
-        const edgesView = new EdgesView({
-            abundance: abundance,
-            ticks: transitions,
-            targetId: "#svg-edges",
-            transitionDuration: transitionDuration,
-        });
-
-        const abundanceView = new LineChartView({
-            target: 'abundance',
-            type: 'area',
-            abundance: Data.getSeries(abundance, [
-                'InfectedPersonsInTown',
-                'IncPeriodPersonsInTown',
-                'IncPeriodPersonsInTown2',
-                'AntibioticTreatedPersonsInTown',
-                'AntibioticTreatedPersonsInTown2',
-                'InfectedPersonsInHospital',
-                'HealthyPersonsInHospital',
-            ]),
-            title: 'Persons',
-            ylabel: 'Persons',
-        });
-
-        const resistanceView = new LineChartView({
-            target: 'resistance',
-            type: 'line',
-            abundance: Data.getSeries(abundance, [
-                'pGetInfectedTown',
-                'AvMicResistance',
-                'AvPathResistance',
-            ]),
-            title: 'Resitance related',
-        });
 
         const playerView = new PlayerView({
-            maxTicks: transitions.length,
+            maxTicks: abundance.length,
         })
-        
+
         playerView.show()
+        let views = [
+            new LineChartView({
+                target: 'abundance',
+                type: 'area',
+                abundance: Data.getSeries(abundance, [
+                    'InfectedPersonsInTown',
+                    'IncPeriodPersonsInTown',
+                    'IncPeriodPersonsInTown2',
+                    'AntibioticTreatedPersonsInTown',
+                    'AntibioticTreatedPersonsInTown2',
+                    'InfectedPersonsInHospital',
+                    'HealthyPersonsInHospital',
+                ]),
+                title: 'Persons',
+                ylabel: 'Persons',
+            }),
+            new LineChartView({
+                target: 'resistance',
+                type: 'line',
+                abundance: Data.getSeries(abundance, [
+                    'pGetInfectedTown',
+                    'AvMicResistance',
+                    'AvPathResistance',
+                ]),
+                title: 'Resitance related',
+            })
+        ]
+
+        if(transitions){
+            views.push(new AgentsView({
+                abundance: abundance,
+                ticks: transitions,
+                targetId: "#svg",
+                transitionDuration: transitionDuration,
+            }))
+
+            views.push(new EdgesView({
+                    abundance: abundance,
+                    ticks: transitions,
+                    targetId: "#svg-edges",
+                    transitionDuration: transitionDuration,
+                }))
+        }
 
         const player = new PlaybackController({
-            views: [
-                agentsView,
-                abundanceView,
-                resistanceView,
-                edgesView,
-            ],
+            views: views,
             interval: transitionDuration + 50,
-            maxTicks: transitions.length,
+            maxTicks: abundance.length,
             playerView: playerView,
         })
     })
 }
-
-// document.getElementById('btn-reset', ()=>{
-//     console.log('reset');
-// });
-
-// document.getElementById('btn-pause', ()=>{
-//     console.log('pause');
-// });

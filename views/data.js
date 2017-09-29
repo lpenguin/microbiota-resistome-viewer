@@ -70,6 +70,11 @@ const Data = {
         });
     },
     loadTransitions: function (url, callback) {
+        if(!url){
+            callback(null, null);
+            return;
+        }
+
         fs.readFile(url, 'utf8', function (err, data) {
             if (err) {
                 callback(err, null);

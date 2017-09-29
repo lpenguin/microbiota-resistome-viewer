@@ -33,8 +33,8 @@ function loadDataAndRun(){
         const transLogFile = filePaths.filter(s => s.endsWith('transLog_NP.txt'))[0]
         const abundanceFile = filePaths.filter(s => s.endsWith('ticks.csv'))[0]
         // console.log(transLogFile, abundanceFile);
-        // win.webContents.send('loadDataAndRun', {transLogFile: transLogFile, abundanceFile: abundanceFile});
-        win.webContents.send('loadDataAndRun', {transLogFile: 'data/transLog_NP.txt', abundanceFile: 'data/ticks.csv'});
+        win.webContents.send('loadDataAndRun', {transLogFile: transLogFile, abundanceFile: abundanceFile});
+        // win.webContents.send('loadDataAndRun', {transLogFile: 'data/transLog_NP.txt', abundanceFile: 'data/ticks.csv'});
     })
 }
 

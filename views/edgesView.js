@@ -222,7 +222,6 @@ class EdgesView extends BaseView {
         .enter()
         .append("svg:path")
         .style('stroke-width', 0)
-        // .style('stroke-opacity', 0)
         .merge(transitionElems)
         .classed('link', true)
         .attr("marker-end", d => "url(#marker-end)")
@@ -238,50 +237,24 @@ class EdgesView extends BaseView {
             const [controlx, controly] = this._calcControlPoint(sx, sy, tx, ty)
             const [sEdgeX, sEdgeY] = this._calcEdgePoints(sx, sy, controlx, controly, sr)
             const [tEdgeX, tEdgeY] = this._calcEdgePoints(tx, ty, controlx, controly, tr)
-
-            // const r = this._distance(sx, sy, tx, ty)
-
-            // const [dx, dy] = [tx - sx, ty - sy]
-            // const [sdx, sdy] = [sr/r * dx, sr/r * dy]
-            // const [tdx, tdy] = [tr/r * dx, tr/r * dy]
-
-            // const [sx1, sy1] = [sx + sdx, sy + sdy]
-            // const [tx1, ty1] = [tx - tdx, ty - tdy]
-            
-            // const [controlx, controly] = this._calcControlPoint(sx, sy, tx, ty)
-            // const [controlx, controly] = this._calcControlPoint(sEdgeX, sEdgeY, tEdgeX, tEdgeY)
-            
-            // const res =  `M${sx},${sy} Q${controlx},${controly} ${tx},${ty}`;
             const res =  `M${sEdgeX},${sEdgeY} Q${controlx},${controly} ${tEdgeX},${tEdgeY}`;
             return res;
         })
-        // .style('stroke-opacity', d => this._opacityScale(sum(d.transitions.slice(-10))))
         .style('stroke-width', d => this._widthScale(sum(d.transitions.slice(-10))))
         .style('stroke', d => this._transitionColorScale(sum(d.transitions.slice(-10))))
         ;
     }
 
     _animateStates(events) {
-        // events.forEach((e) => {
-        //     this._statesMap[e.oldState].count = Math.max(0, this._statesMap[e.oldState].count - 1);
-        //     this._statesMap[e.newState].count = Math.max(0, this._statesMap[e.newState].count + 1);
-        // });
+        events.forEach((e) => {
+            this._statesMap[e.oldState].count = Math.max(0, this._statesMap[e.oldState].count - 1);
+            this._statesMap[e.newState].count = Math.max(0, this._statesMap[e.newState].count + 1);
+        });
 
-        // let stateCircle = this._svg.selectAll("circle.state").data(this._states);
-
-        // stateCircle
-        //     .transition()
-        //     .duration(this._transitionDuration * 0.4)
-        //     .delay(this._transitionDuration * 0.6)
-        //     .attr('cx', d => this._xScale(d.x))
-        //     .attr('cy', d => this._yScale(d.y))
-        //     .attr('r', d =>  this._countsScale(d.count))
-        // ;
-
-        // this._svg
-        //     .selectAll("text.state")
-        //     .data(this._states)
-        //     .text(d => d.name + " " + d.count);
+        this._svg
+            .selectAll("text.state")
+            .data(this._states)
+            .text(d => d.name + " " + d.count);
     }
 
     _createStates() {
