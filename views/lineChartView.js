@@ -95,8 +95,11 @@ class LineChartView extends BaseView {
     }
 
     reset(){
-        this._chart.destroy()
-        this._render()
+        this._series.forEach((s, i) => {
+            let newPoint = s.data[0];
+            this._chart.series[i].setData([[0, newPoint]], false, false, false);
+        });   
+        this._chart.redraw();     
     }
 }
 
