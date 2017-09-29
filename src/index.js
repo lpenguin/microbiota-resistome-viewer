@@ -20,6 +20,10 @@ function loadDataAndRun(abundanceFile, transLogFile) {
         async.apply(Data.loadTransitions, transLogFile),
         async.apply(Data.loadTicks, abundanceFile),
     ], (err, result) => {
+        ['abundance', 'resistance', 'svg', 'svg-edges'].forEach((id)=>{
+            document.getElementById(id).innerHTML = ''
+        })
+
         let [transitions, abundance] = result;
 
         const transitionDuration = 500;

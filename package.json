@@ -2,7 +2,7 @@
   "name": "microbiota-resistome-viewer",
   "productName": "VERA viewer",
   "version": "0.1.1",
-  "main": "main.js",
+  "main": "src/main.js",
   "devDependencies": {
     "electron": "^1.6.11"
   },

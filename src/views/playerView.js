@@ -5,7 +5,9 @@ class PlayerView extends EventEmitter {
         super()
         this.maxTicks = maxTicks
 
-        this.panelElement = document.getElementById('panel-controls');
+        this.panelElement = document.getElementById('panel-controls')
+
+
         this.ticksText = document.getElementById('text-ticks')
 
         this.playButton = document.getElementById('btn-play')
@@ -20,7 +22,7 @@ class PlayerView extends EventEmitter {
         this.resetButton.addEventListener('click', ()=>{
             this.emit('player:reset')
         })
-        
+
         this.pauseButton.addEventListener('click', ()=>{
             this.emit('player:pause')
         })
@@ -29,8 +31,13 @@ class PlayerView extends EventEmitter {
             this.emit('player:step')
         })
 
+        
         this.setTicks(0)
         this.setStateStopped()
+    }
+
+    removeEventListeners(){
+
     }
 
     show(){

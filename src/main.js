@@ -32,8 +32,21 @@ function loadDataAndRun(){
         }
         const transLogFile = filePaths.filter(s => s.endsWith('transLog_NP.txt'))[0]
         const abundanceFile = filePaths.filter(s => s.endsWith('ticks.csv'))[0]
+
+            // and load the index.html of the app.
+        win.loadURL(url.format({
+            pathname: path.join(__dirname, 'index.html'),
+            protocol: 'file:',
+            slashes: true
+        }));
+
+        // Open the DevTools.
+        win.webContents.openDevTools()
+        win.webContents.on('did-finish-load', ()=>{
+            win.webContents.send('loadDataAndRun', {transLogFile: transLogFile, abundanceFile: abundanceFile});
+        })
         // console.log(transLogFile, abundanceFile);
-        win.webContents.send('loadDataAndRun', {transLogFile: transLogFile, abundanceFile: abundanceFile});
+        
         // win.webContents.send('loadDataAndRun', {transLogFile: 'data/transLog_NP.txt', abundanceFile: 'data/ticks.csv'});
     })
 }
@@ -42,15 +55,7 @@ function createWindow () {
     // Create the browser window.
     win = new BrowserWindow({width: 1200, height: 720, title: 'VERA viewer'});
 
-    // and load the index.html of the app.
-    win.loadURL(url.format({
-        pathname: path.join(__dirname, 'index.html'),
-        protocol: 'file:',
-        slashes: true
-    }));
 
-    // Open the DevTools.
-    win.webContents.openDevTools()
 
     // Emitted when the window is closed.
     win.on('closed', () => {
