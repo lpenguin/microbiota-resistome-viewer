@@ -40,7 +40,9 @@ body, html {
   width: 100%;
 }
 
-
+#btn-pause {
+  display: none;
+}
  /* ------ */
 html,
 body {
