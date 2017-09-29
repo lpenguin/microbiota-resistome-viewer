@@ -40,7 +40,11 @@ body, html {
   width: 100%;
 }
 
-#btn-pause {
+.invisible{
+  visibility: hidden;
+}
+
+.hidden {
   display: none;
 }
  /* ------ */
@@ -74,5 +78,5 @@ body {
 }
 
 .box .row.footer {
-  flex: 0 1 40px;
+  flex: 0 1 20px;
 }

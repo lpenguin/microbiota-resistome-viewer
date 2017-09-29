@@ -67,6 +67,8 @@ function loadDataAndRun(abundanceFile, transLogFile) {
         const playerView = new PlayerView({
             maxTicks: transitions.length,
         })
+        
+        playerView.show()
 
         const player = new PlaybackController({
             views: [

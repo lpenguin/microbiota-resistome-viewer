@@ -4,6 +4,8 @@ class PlayerView extends EventEmitter {
     constructor({maxTicks}){
         super()
         this.maxTicks = maxTicks
+
+        this.panelElement = document.getElementById('panel-controls');
         this.ticksText = document.getElementById('text-ticks')
 
         this.playButton = document.getElementById('btn-play')
@@ -29,6 +31,10 @@ class PlayerView extends EventEmitter {
 
         this.setTicks(0)
         this.setStateStopped()
+    }
+
+    show(){
+        this.panelElement.style.visibility = 'visible'
     }
 
     setTicks(nTick){
