@@ -140,8 +140,8 @@ class EdgesView extends BaseView {
             .clamp(true);
 
         this._transitionColorScale = d3.scaleLinear()
-                                    .domain([0, 100, 200])
-                                    .range(['blue', 'yellow', 'red']);
+                                    .domain([0, 50, 150, 200])
+                                    .range(['rgb(90, 113, 226)', 'green', 'yellow', 'red']);
 
     }
 
