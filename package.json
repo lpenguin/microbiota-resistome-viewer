@@ -1,6 +1,6 @@
 {
   "name": "microbiota-resistome-viewer",
-  "productName": "VERA viewer",
+  "productName": "vera-viewer",
   "version": "0.1.1",
   "main": "src/main.js",
   "devDependencies": {
