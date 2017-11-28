@@ -1,7 +1,8 @@
 const {app, BrowserWindow, Menu, dialog, ipcMain} = require('electron');
 const path = require('path');
 const url = require('url');
-
+const process = require('process');
+const minimist = require('minimist');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -33,21 +34,20 @@ function loadDataAndRun(){
         const transLogFile = filePaths.filter(s => s.endsWith('transLog_NP.txt'))[0]
         const abundanceFile = filePaths.filter(s => s.endsWith('ticks.csv'))[0]
 
-            // and load the index.html of the app.
-        win.loadURL(url.format({
-            pathname: path.join(__dirname, 'index.html'),
-            protocol: 'file:',
-            slashes: true
-        }));
+        openSimulation(abundanceFile, transLogFile)
+    })
+}
 
-        // Open the DevTools.
-        win.webContents.openDevTools()
-        win.webContents.on('did-finish-load', ()=>{
-            win.webContents.send('loadDataAndRun', {transLogFile: transLogFile, abundanceFile: abundanceFile});
-        })
-        // console.log(transLogFile, abundanceFile);
-        
-        // win.webContents.send('loadDataAndRun', {transLogFile: 'data/transLog_NP.txt', abundanceFile: 'data/ticks.csv'});
+function openSimulation(abundanceFile, transLogFile){
+    win.loadURL(url.format({
+        pathname: path.join(__dirname, 'index.html'),
+        protocol: 'file:',
+        slashes: true
+    }))
+
+    // win.webContents.openDevTools()
+    win.webContents.on('did-finish-load', ()=>{
+        win.webContents.send('loadDataAndRun', {transLogFile: transLogFile, abundanceFile: abundanceFile});
     })
 }
 
@@ -70,8 +70,14 @@ function createWindow () {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
+    const [abundanceFile, transLogFile] = parseArgs();
+
     createWindow();
     createMenu();
+
+    if(abundanceFile){
+        openSimulation(abundanceFile, transLogFile);
+    }
 });
 
 // Quit when all windows are closed.
@@ -93,3 +99,24 @@ app.on('activate', () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
+
+const helpMessage = `usage: vera-viewer [-h] [-a ABUNDANCE_FILE] [-t TRANSLOG_FILE]
+
+optional arguments: 
+    -h                  show this help message and exit 
+    -a ABUNDANCE_FILE   abundance file
+    -t TRANSLOG_FILE    translog file
+`
+function parseArgs(){
+    const args = minimist(process.argv, {
+        string: ['a', 't'],
+        boolean: ['h']
+    });
+    
+    if(args.h){
+        console.log(helpMessage);
+        app.quit();
+        return [undefined, undefined];
+    }
+    return [args.a, args.t]
+}

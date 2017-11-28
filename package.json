@@ -9,12 +9,13 @@
   "scripts": {
     "package-mac": "electron-packager . --overwrite --platform=darwin --arch=x64 --prune=true --out=release-builds",
     "package-win": "electron-packager . --overwrite --asar=true --platform=win32 --arch=ia32 --prune=true --out=release-builds --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"Electron Tutorial App\"",
-    "package-linux" : "electron-packager . --overwrite --platform=linux --arch=x64 --prune=true --out=release-builds"
+    "package-linux": "electron-packager . --overwrite --platform=linux --arch=x64 --prune=true --out=release-builds"
   },
   "dependencies": {
     "async": "^2.5.0",
     "d3": "^4.10.0",
     "highcharts": "^5.0.14",
+    "minimist": "^1.2.0",
     "phosphor": "^0.7.1",
     "phosphor-dockpanel": "^0.9.7",
     "underscore": "^1.8.3"
