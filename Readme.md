@@ -1,4 +1,4 @@
-# Vera viewer
+# VERA viewer
 ![](https://raw.githubusercontent.com/lpenguin/microbiota-resistome-viewer/master/pictures/Peek%202017-11-28%2015-28.gif)
 ## Dependicies
 
