@@ -45,7 +45,7 @@ function openSimulation(abundanceFile, transLogFile){
         slashes: true
     }))
 
-    win.webContents.openDevTools()
+    // win.webContents.openDevTools()
     win.webContents.on('did-finish-load', ()=>{
         win.webContents.send('loadDataAndRun', {transLogFile: transLogFile, abundanceFile: abundanceFile});
     })
