@@ -34,18 +34,21 @@ function loadDataAndRun(){
         const transLogFile = filePaths.filter(s => s.endsWith('transLog_NP.txt'))[0]
         const abundanceFile = filePaths.filter(s => s.endsWith('ticks.csv'))[0]
 
-        openSimulation(abundanceFile, transLogFile)
+        openSimulation(abundanceFile, transLogFile, false)
     })
 }
 
-function openSimulation(abundanceFile, transLogFile){
+function openSimulation(abundanceFile, transLogFile, devTools=false){
     win.loadURL(url.format({
         pathname: path.join(__dirname, 'index.html'),
         protocol: 'file:',
         slashes: true
     }))
 
-    // win.webContents.openDevTools()
+    if(devTools){
+        win.webContents.openDevTools();
+    }
+    
     win.webContents.on('did-finish-load', ()=>{
         win.webContents.send('loadDataAndRun', {transLogFile: transLogFile, abundanceFile: abundanceFile});
     })
@@ -70,13 +73,12 @@ function createWindow () {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
-    const [abundanceFile, transLogFile] = parseArgs();
+    const [abundanceFile, transLogFile, devTools] = parseArgs();
 
     createWindow();
     createMenu();
-
     if(abundanceFile){
-        openSimulation(abundanceFile, transLogFile);
+        openSimulation(abundanceFile, transLogFile, devTools);
     }
 });
 
@@ -85,8 +87,8 @@ app.on('window-all-closed', () => {
     // On macOS it is common for applications and their menu bar
     // to stay active until the user quits explicitly with Cmd + Q
     if (process.platform !== 'darwin') {
-    app.quit()
-}
+        app.quit()
+    }
 });
 
 app.on('activate', () => {
@@ -106,11 +108,12 @@ optional arguments:
     -h                  show this help message and exit 
     -a ABUNDANCE_FILE   abundance file
     -t TRANSLOG_FILE    translog file
+    -d                  open DevTools
 `
 function parseArgs(){
     const args = minimist(process.argv, {
         string: ['a', 't'],
-        boolean: ['h']
+        boolean: ['h', 'd']
     });
     
     if(args.h){
@@ -118,5 +121,5 @@ function parseArgs(){
         app.quit();
         return [undefined, undefined];
     }
-    return [args.a, args.t]
+    return [args.a, args.t, args.d]
 }
