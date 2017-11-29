@@ -44,3 +44,20 @@ line.transition {
     text-anchor: middle;
     white-space: 0px;
 }
+
+.tooltip {
+  position: absolute;
+  text-align: center;
+  /* width: 60px; */
+  /* height: 28px; */
+  padding: 8px;
+  font: 14px sans-serif;
+  background: rgb(216, 226, 238);
+  border: 0px;
+  border-radius: 8px;
+  pointer-events: none;
+}
+
+text.state {
+    font: 12px sans-serif;
+}

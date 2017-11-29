@@ -1,6 +1,5 @@
 const Data = require('./views/data');
-const {AgentsView} = require('./views/agentsView');
-const {EdgesView} = require('./views/edgesView');
+const { StatesView } = require('./views/statesView');
 const {LineChartView} = require('./views/lineChartView');
 const d3 = require('d3');
 const async = require('async');
@@ -62,18 +61,21 @@ function loadDataAndRun(abundanceFile, transLogFile) {
         ]
 
         if(transitions){
-            views.push(new AgentsView({
+            views.push(new StatesView({
                 abundance: abundance,
                 ticks: transitions,
                 targetId: "#svg",
                 transitionDuration: transitionDuration,
+                animateAgents: true,
+                animateStates: true,
             }))
 
-            views.push(new EdgesView({
+            views.push(new StatesView({
                     abundance: abundance,
                     ticks: transitions,
                     targetId: "#svg-edges",
                     transitionDuration: transitionDuration,
+                    animateTransitionFrequency: true,
                 }))
         }
 
