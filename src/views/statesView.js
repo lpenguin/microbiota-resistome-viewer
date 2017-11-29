@@ -52,8 +52,15 @@ class StatesView extends BaseView {
             .attr("d", "M1,2 L0,4 L4,2 L0,0 L1,2");
 
         this._linksPath = this._svg.append("svg:g")
-
-
+        this._stateDescriptionMap = {
+            'healthyHospPeople': 'Healthy hospitalized',
+            'hospAntTrPersons': 'AB treatment in hospital',
+            'townAntTrPersons': 'Person in AB treatment period at home',
+            'townAntTrPersons2': 'Person in AB wrong treatment period at home',
+            'townHealthyPersons': 'Healthy person in town',
+            'townIncPerPersons': 'Person in incubation period',
+            'townIncPerPersons2': 'Person in incubation period after wrong treatment',
+        }
     }
 
     reset() {
@@ -298,7 +305,7 @@ class StatesView extends BaseView {
 
     _handleCircleMouseOver(thisArg, d, i) {
         this._tooltip
-            .html(`${d.name}`)
+            .html(`${this._stateDescriptionMap[d.name]}`)
             .style('left', (d3.event.pageX) + "px")
             .style('top', (d3.event.pageY - 28) + "px")
             .style('opacity', 1)
