@@ -4,7 +4,8 @@
   "version": "0.1.1",
   "main": "src/main.js",
   "devDependencies": {
-    "electron": "^1.6.11"
+    "electron": "^1.6.11",
+    "electron-packager": "^10.1.0"
   },
   "scripts": {
     "package-mac": "electron-packager . --overwrite --platform=darwin --arch=x64 --prune=true --out=release-builds",
