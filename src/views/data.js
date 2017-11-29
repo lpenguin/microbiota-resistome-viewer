@@ -63,7 +63,7 @@ const Data = {
             if(err){
                 callback(err, null);
             }
-            let data = d3.csvParse(result).map(row => {
+            let data = d3.tsvParse(result).map(row => {
                 return _.mapObject(row, (value, key) => parseFloat(value));
             })
             callback(null, data);
@@ -87,7 +87,8 @@ const Data = {
                     oldState: t['TransFromClass'],
                     newState: t['TransToClass']
                 }
-            });
+            })
+            .filter(t => t.oldState != "NA");
 
             const ticks = Data.groupEvents(events);
             callback(null, ticks);
